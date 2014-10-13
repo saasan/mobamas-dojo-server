@@ -14,7 +14,7 @@ var production = (process.env.NODE_ENV === 'production');
 // ポートの設定
 app.set('port', process.env.PORT || config.developmentPort);
 
-// mongoDBサーバ接続
+// mongoDBサーバー接続
 mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/mobamas-dojo-server');
 var db = mongoose.connection;
 
@@ -41,7 +41,7 @@ app.get('/', function(req, res, next) {
   // 本番環境でX-Requested-Withヘッダが"XMLHttpRequest"でない場合
   if (production && !req.xhr) {
     // 403 Forbidden
-    res.status(403).end();
+    res.status(403).send('<h1>403 Forbidden</h1>').end();
     return;
   }
 
@@ -53,7 +53,7 @@ app.get('/', function(req, res, next) {
     // データが無い場合
     if (!dojoList) {
       // 普通は有り得ないので 500 Internal Server Error にしておく
-      res.status(500).end();
+      res.status(500).send('<h1>500 Internal Server Error</h1>').end();
       return;
     }
 
