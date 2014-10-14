@@ -8,12 +8,12 @@ var config = require('config');
 var mongoose = require('mongoose');
 var schema = require('../schema');
 
-// mongoDBサーバ接続
-mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/amafi');
+// mongoDBサーバー接続
+mongoose.connect(process.env.MONGOHQ_URL || config.development.mongoURL);
 var db = mongoose.connection;
 
-// Storeスキーマモデル生成
-var Stores = db.model('Stores', schema.StoreSchema);
+// DojoListスキーマモデル生成
+var DojoLists = db.model('DojoLists', schema.DojoListSchema);
 
 /**
  * RSSの内容をパースしてASIN、タイトル、画像のURLをオブジェクトとして返す
@@ -56,7 +56,7 @@ function fetch(store, next) {
     if (!err && res.statusCode === 200) {
       console.log('save store started: ' + store.name);
 
-      var dbStore = new Stores();
+      var dbStore = new DojoLists();
       dbStore.name = store.name;
       dbStore.bestseller = parse(body);
 
@@ -81,7 +81,7 @@ function fetch(store, next) {
 console.log('===== getrss started =====');
 console.log('remove stores started');
 // 全削除
-Stores.remove({}, function(err) {
+DojoLists.remove({}, function(err) {
   if (err) {
     console.log('error: ' + err);
   }
@@ -99,4 +99,3 @@ Stores.remove({}, function(err) {
     });
   }
 });
-

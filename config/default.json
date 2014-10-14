@@ -3,5 +3,8 @@
   "sourceURL": "https://spreadsheets.google.com/pub?key=0Aq6mv2GCHMGLdERhLURsdEZwdVFvREdiYjE4Sy1FUnc&output=csv",
   "numberOfDojos": 1000,
   "errorReportMailAddress": "saasan.wiredsky@gmail.com",
-  "developmentPort": 4000
+  "development": {
+    "port": 4000,
+    "mongoURL": "mongodb://localhost/mobamas-dojo-server"
+  }
 }

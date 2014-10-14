@@ -9,13 +9,14 @@ var schema = require('./schema');
 
 // 本番環境かどうかのフラグ
 // heroku config:set NODE_ENV=production
+// NODE_ENV=production node app.js
 var production = (process.env.NODE_ENV === 'production');
 
 // ポートの設定
-app.set('port', process.env.PORT || config.developmentPort);
+app.set('port', process.env.PORT || config.development.port);
 
 // mongoDBサーバー接続
-mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/mobamas-dojo-server');
+mongoose.connect(process.env.MONGOHQ_URL || config.development.mongoURL);
 var db = mongoose.connection;
 
 // DojoListスキーマモデル生成
