@@ -6,62 +6,78 @@ var config = require('config');
 var mongoose = require('mongoose');
 var schema = require('../schema');
 var csv = require('csv');
+var Q = require('q');
 
-process.on('exit', function() {
-  console.log('exit');
-});
+function disconnectDB() {
+  console.log('disconnectDB');
+  var deferred = Q.defer();
 
-function saveDB(db, dojos) {
-  console.log('saveDB');
+  mongoose.disconnect(function() {
+    console.log('disconnected');
+    deferred.resolve();
+  });
+
+  return deferred.promise;
+}
+
+function saveDB(args) {
+  var deferred = Q.defer();
+
+  console.log('save DB started');
+  var dojo = new args.DojoLists();
+  dojo.json = JSON.stringify(args.dojos);
+  dojo.save(function(err) {
+    if (err) {
+      deferred.reject(err);
+    }
+    else {
+      console.log('save DB finished');
+      deferred.resolve();
+    }
+  });
+
+  return deferred.promise;
+}
+
+function removeDB(args) {
+  var deferred = Q.defer();
 
   // DojoListスキーマモデル生成
-  var DojoLists = db.model('DojoLists', schema.DojoListSchema);
+  var DojoLists = args.db.model('DojoLists', schema.DojoListSchema);
 
   // 全削除
   console.log('remove DB started');
   DojoLists.remove({}, function(err) {
     if (err) {
-      console.log('remove DB error: ' + err.message);
+      deferred.reject(err);
     }
     else {
       console.log('remove DB finished');
-
-      // 保存
-      console.log('save DB started');
-      var dojo = new DojoLists();
-      dojo.json = JSON.stringify(dojos);
-      dojo.save(function(err) {
-        if (err) {
-          console.log('save DB error: ' + err.message);
-        }
-        else {
-          console.log('save DB finished');
-        }
-      });
+      deferred.resolve({ DojoLists: DojoLists, dojos: args.dojos });
     }
   });
 
-  db.close(function() {
-    console.log('mongoose.connection.close');
-  });
+  return deferred.promise;
 }
 
 function connectDB(dojos) {
   console.log('connectDB');
+  var deferred = Q.defer();
 
   // mongoDBサーバー接続
   var db = mongoose.createConnection(process.env.MONGOHQ_URL || config.development.mongoURL);
 
   // 接続完了
   db.on('connected', function() {
-    // 保存
-    saveDB(db, dojos);
+    deferred.resolve({ db: db, dojos: dojos });
   });
 
   // エラー時の処理
   db.on('error', function(err) {
-    console.log('mongoose.createConnection error: ' + err.message);
+    deferred.reject(err);
   });
+
+  return deferred.promise;
 }
 
 /**
@@ -70,6 +86,7 @@ function connectDB(dojos) {
  */
 function transformCSV(data) {
   console.log('transformCSV');
+  var deferred = Q.defer();
 
   // CSVの列
   var COLUMNS;
@@ -112,7 +129,7 @@ function transformCSV(data) {
 
   // エラー時の処理
   parser.on('error', function(err) {
-    console.log('parse error: ' + err.message);
+    deferred.reject(err);
   });
 
   // パース完了
@@ -120,13 +137,14 @@ function transformCSV(data) {
     console.log('parse finish');
     console.log(JSON.stringify(dojos));
 
-    connectDB();
+    deferred.resolve(dojos);
   });
 
   // パース開始
   parser.write(data);
   parser.end();
 
+  return deferred.promise;
 }
 
 /**
@@ -134,6 +152,7 @@ function transformCSV(data) {
  */
 function downloadCSV() {
   console.log('downloadCSV');
+  var deferred = Q.defer();
 
   var req = https.get(config.sourceURL, function(res) {
     var data = '';
@@ -150,7 +169,7 @@ function downloadCSV() {
     // データ受信完了
     res.on('end', function() {
       console.log('downloadCSV end');
-      transformCSV(data);
+      deferred.resolve(data);
     });
   });
 
@@ -159,16 +178,25 @@ function downloadCSV() {
 
   // タイムアウト時の処理
   req.on('timeout', function() {
-    console.log('downloadCSV request timed out');
     req.abort();
-    process.exitCode = 1;
+    deferred.reject(new Error('request timed out'));
   });
 
   // エラー時の処理
   req.on('error', function(err) {
-    console.log('downloadCSV error: ' + err.message);
-    process.exitCode = 1;
+    deferred.reject(err);
   });
+
+  return deferred.promise;
 }
 
-downloadCSV();
+downloadCSV()
+  .then(transformCSV)
+  .then(connectDB)
+  .then(removeDB)
+  .then(saveDB)
+  .finally(disconnectDB)
+  .catch(function(err) {
+    console.log('error: ' + err.message);
+    process.exitCode = 1;
+  });
