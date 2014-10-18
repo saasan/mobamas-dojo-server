@@ -1,6 +1,6 @@
 {
   "accessControlAllowOrigin": "http://saasan.github.io",
-  "sourceURL": "https://spreadsheets.google.com/pub?key=0Aq6mv2GCHMGLdERhLURsdEZwdVFvREdiYjE4Sy1FUnc&output=csv",
+  "sourceURL": "https://spreadsheets.google.com/pub?key=0Aq6mv2GCHMGLdERhLURsdEZwdVFvREdiYjE4Sy1FUnc&output=csv&range=A1:M20",
   "numberOfDojos": 1000,
   "errorReportMailAddress": "saasan.wiredsky@gmail.com",
   "development": {
