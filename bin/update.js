@@ -8,35 +8,27 @@ var schema = require('../schema');
 var csv = require('csv');
 var Q = require('q');
 
-function disconnectDB() {
-  console.log('disconnectDB');
-  var deferred = Q.defer();
-
-  mongoose.disconnect(function() {
-    console.log('disconnected');
-    deferred.resolve();
-  });
-
-  return deferred.promise;
+/**
+ * エラー処理
+ * @param {type} err Errorオブジェクト
+ */
+function onError(err) {
+  console.log(err.stack);
+  process.exitCode = 1;
 }
 
-function saveDB(args) {
-  var deferred = Q.defer();
+/**
+ * DBから切断する
+ * @returns {type} Q.Promise
+ */
+function disconnectDB() {
+  console.log('disconnectDB');
+  return Q.ninvoke(mongoose, 'disconnect');
+}
 
-  console.log('save DB started');
-  var dojo = new args.DojoLists();
-  dojo.json = JSON.stringify(args.dojos);
-  dojo.save(function(err) {
-    if (err) {
-      deferred.reject(err);
-    }
-    else {
-      console.log('save DB finished');
-      deferred.resolve();
-    }
-  });
-
-  return deferred.promise;
+function saveDB(dojo) {
+  console.log('saveDB');
+  return Q.ninvoke(dojo, 'save');
 }
 
 function removeDB(args) {
@@ -53,7 +45,12 @@ function removeDB(args) {
     }
     else {
       console.log('remove DB finished');
-      deferred.resolve({ DojoLists: DojoLists, dojos: args.dojos });
+
+      // 新しい道場
+      var dojo = new DojoLists();
+      dojo.json = JSON.stringify(args.dojos);
+
+      deferred.resolve(dojo);
     }
   });
 
@@ -70,6 +67,11 @@ function connectDB(dojos) {
   // 接続完了
   db.on('connected', function() {
     deferred.resolve({ db: db, dojos: dojos });
+  });
+
+  // 切断
+  db.on('disconnected', function() {
+    console.log('disconnected');
   });
 
   // エラー時の処理
@@ -89,22 +91,21 @@ function transformCSV(data) {
   var deferred = Q.defer();
 
   // CSVの列
-  var COLUMNS;
-  (function(COLUMNS) {
-    COLUMNS[COLUMNS.UNUSED = 0] = 'UNUSED';
-    COLUMNS[COLUMNS.LV = 1] = 'LV';
-    COLUMNS[COLUMNS.RANK = 2] = 'RANK';
-    COLUMNS[COLUMNS.ID = 3] = 'ID';
-    COLUMNS[COLUMNS.TYPE = 4] = 'TYPE';
-    COLUMNS[COLUMNS.LINK = 5] = 'LINK';
-    COLUMNS[COLUMNS.CHEER = 6] = 'CHEER';
-    COLUMNS[COLUMNS.LEADER = 7] = 'LEADER';
-    COLUMNS[COLUMNS.DEFENSE = 8] = 'DEFENSE';
-    COLUMNS[COLUMNS.COMMENT = 9] = 'COMMENT';
-    COLUMNS[COLUMNS.NO = 10] = 'NO';
-    COLUMNS[COLUMNS.LAST_UPDATE = 11] = 'LAST_UPDATE';
-    COLUMNS[COLUMNS.REPEATED = 12] = 'REPEATED';
-  })(COLUMNS || (COLUMNS = {}));
+  var COLUMNS = {
+    UNUSED: 0,
+    LV: 1,
+    RANK: 2,
+    ID: 3,
+    TYPE: 4,
+    LINK: 5,
+    CHEER: 6,
+    LEADER: 7,
+    DEFENSE: 8,
+    COMMENT: 9,
+    NO: 10,
+    LAST_UPDATE: 11,
+    REPEATED: 12
+  };
 
   var dojos = [];
   var parser = csv.parse();
@@ -112,7 +113,8 @@ function transformCSV(data) {
   // 各行が読み込めるようになったらオブジェクト化して配列へ入れる
   parser.on('readable', function() {
     for (var record = parser.read(); record; record = parser.read()) {
-      if (record[COLUMNS.LV] === '' || record[COLUMNS.RANK] === '' || record[COLUMNS.ID] === '' || record[COLUMNS.REPEATED] === '重複') {
+      if (record[COLUMNS.LV] === '' || record[COLUMNS.RANK] === '' ||
+          record[COLUMNS.ID] === '' || record[COLUMNS.REPEATED] === '重複') {
         continue;
       }
 
@@ -196,7 +198,5 @@ downloadCSV()
   .then(removeDB)
   .then(saveDB)
   .finally(disconnectDB)
-  .catch(function(err) {
-    console.log('error: ' + err.message);
-    process.exitCode = 1;
-  });
+  .catch(onError)
+  .done();
