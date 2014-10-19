@@ -191,8 +191,8 @@ function downloadCSV() {
     });
   });
 
-  // ミリ秒でタイムアウトを設定
-  req.setTimeout(60 * 1000);
+  // タイムアウトを設定
+  req.setTimeout(config.downloadTimeout);
 
   // タイムアウト時の処理
   req.on('timeout', function() {
