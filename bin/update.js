@@ -7,6 +7,10 @@ var mongoose = require('mongoose');
 var schema = require('../schema');
 var csv = require('csv');
 var Q = require('q');
+var sendgrid = require('sendgrid')(
+  process.env.SENDGRID_USERNAME || config.development.sendgrid.userName,
+  process.env.SENDGRID_PASSWORD || config.development.sendgrid.password
+);
 
 // CSVの列
 var COLUMNS = {
@@ -32,6 +36,15 @@ var COLUMNS = {
 function onError(err) {
   console.log(err.stack);
   process.exitCode = 1;
+
+  sendgrid.send({
+    to: config.errorReportMailAddress,
+    from: config.errorReportMailAddress,
+    subject: 'mobamas-dojo-serverエラー報告',
+    text: err.stack
+  }, function(err/*, json*/) {
+    console.log(err.stack);
+  });
 }
 
 /**
