@@ -60,19 +60,19 @@ function saveDB(dojoList) {
  * @returns {Q.Promise} Q.Promise
  */
 function removeDB(db, dojos) {
+  console.log('removeDB');
   var deferred = Q.defer();
 
   // DojoListスキーマモデル生成
   var DojoLists = db.value.model('DojoLists', schema.DojoListSchema);
 
   // 全削除
-  console.log('remove DB started');
   DojoLists.remove({}, function(err) {
     if (err) {
       deferred.reject(err);
     }
     else {
-      console.log('remove DB finished');
+      console.log('removeDB finished');
 
       // 新しい道場リスト
       var dojoList = new DojoLists();
