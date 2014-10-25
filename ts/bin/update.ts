@@ -1,5 +1,5 @@
-///<reference path='../../../lib/node.d.ts'/>
-// ↑正しいパスは'../../lib/node.d.ts'だけどなぜかコンパイルできないので。
+///<reference path='../../../typings/node.d.ts'/>
+// ↑正しいパスは'../../typings/node.d.ts'だけどなぜかコンパイルできないので。
 'use strict';
 
 var https = require('https');

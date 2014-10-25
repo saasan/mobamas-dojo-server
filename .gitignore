@@ -1,5 +1,5 @@
 node_modules/
 config/runtime.json
 config/local.json
-lib/
+typings/
 release/
