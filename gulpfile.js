@@ -6,7 +6,7 @@ var rimraf = require('rimraf');
 var paths = {
   files: ['.gitignore', 'package.json', 'Procfile', 'config/*', 'bin/*'],
   ts: 'ts/**/*.ts',
-  out: 'release/'
+  out: '../mobamas-dojo-server-release/'
 };
 
 gulp.task('clean', function() {
