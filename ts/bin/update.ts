@@ -37,9 +37,10 @@ var COLUMNS = {
 function onError(err) {
   console.log(err.stack);
 
+  var mailAddress = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
   sendgrid.send({
-    to: config.errorReportMailAddress,
-    from: config.errorReportMailAddress,
+    to: mailAddress,
+    from: mailAddress,
     subject: 'mobamas-dojo-serverエラー報告',
     text: err.stack
   }, function(err/*, json*/) {
