@@ -2,30 +2,30 @@
 ///<reference path='../typings/mongoose/mongoose.d.ts'/>
 'use strict';
 
-var express = require('express');
-var app = express();
+import express = require('express');
+var app: Express = express();
 
-var config = require('config');
-var mongoose = require('mongoose');
-var schema = require('./schema');
+import config = require('config');
+import mongoose = require('mongoose');
+import schema = require('./schema');
 
 // 本番環境かどうかのフラグ
 // heroku config:set NODE_ENV=production
 // NODE_ENV=production node app.js
-var production = (process.env.NODE_ENV === 'production');
+var production: boolean = (process.env.NODE_ENV === 'production');
 
 // ポートの設定
 app.set('port', process.env.PORT || config.development.port);
 
 // mongoDBサーバー接続
 mongoose.connect(process.env.MONGOHQ_URL || config.development.mongoURL);
-var db = mongoose.connection;
+var db: Connection = mongoose.connection;
 
 // DojoListスキーマモデル生成
-var DojoLists = db.model('DojoLists', schema.DojoListSchema);
+var DojoLists: Model = db.model('DojoLists', schema.DojoListSchema);
 
 // CORS(Cross-Origin Resource Sharing)の設定
-app.all('*', function(req, res, next) {
+app.all('*', function(req: any, res: any, next: Function): any {
   // 本番環境の場合はアクセス元を制限
   if (production) {
     res.header('Access-Control-Allow-Origin', config.accessControlAllowOrigin);
@@ -40,7 +40,7 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-app.get('/', function(req, res, next) {
+app.get('/', function(req: any, res: any, next: Function): any {
   // 本番環境でX-Requested-Withヘッダが"XMLHttpRequest"でない場合
   if (production && !req.xhr) {
     // 403 Forbidden
@@ -48,7 +48,7 @@ app.get('/', function(req, res, next) {
     return;
   }
 
-  DojoLists.findOne({}, function(err, dojoList) {
+  DojoLists.findOne({}, function(err: any, dojoList: any): any {
     if (err) {
       return next(err);
     }
