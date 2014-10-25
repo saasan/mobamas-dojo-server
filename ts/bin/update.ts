@@ -35,7 +35,6 @@ var COLUMNS = {
  */
 function onError(err) {
   console.log(err.stack);
-  process.exitCode = 1;
 
   sendgrid.send({
     to: config.errorReportMailAddress,
