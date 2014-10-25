@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+///<reference path='../../lib/node.d.ts'/>
 'use strict';
 
 var https = require('https');

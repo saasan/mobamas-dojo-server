@@ -1,3 +1,4 @@
+///<reference path='../lib/node.d.ts'/>
 'use strict';
 
 var mongoose = require('mongoose');
