@@ -1,4 +1,5 @@
-///<reference path='../typings/node.d.ts'/>
+///<reference path='../typings/node/node.d.ts'/>
+///<reference path='../typings/mongoose/mongoose.d.ts'/>
 'use strict';
 
 var mongoose = require('mongoose');
