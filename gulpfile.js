@@ -20,7 +20,7 @@ gulp.task('copy', function() {
 
 gulp.task('ts', function() {
   gulp.src(paths.ts, { base: 'ts/' })
-    .pipe(tsc())
+    .pipe(tsc({ keepTree: false })) // デフォルトのkeepTree: trueだとなぜかコンパイルできないので。
     .pipe(gulp.dest(paths.out));
 });
 
