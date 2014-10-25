@@ -4,7 +4,7 @@ var tsc = require('gulp-tsc');
 var rimraf = require('rimraf');
 
 var paths = {
-  files: ['.gitignore', 'package.json', 'Procfile', 'config/*'],
+  files: ['.gitignore', 'package.json', 'Procfile', 'config/*', 'bin/*'],
   ts: 'ts/**/*.ts',
   out: 'release/'
 };
@@ -19,7 +19,7 @@ gulp.task('copy', function() {
 });
 
 gulp.task('ts', function() {
-  gulp.src(paths.ts, { base: './' })
+  gulp.src(paths.ts, { base: 'ts/' })
     .pipe(tsc())
     .pipe(gulp.dest(paths.out));
 });
