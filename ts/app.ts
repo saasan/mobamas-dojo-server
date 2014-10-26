@@ -1,10 +1,9 @@
 ///<reference path='../typings/node/node.d.ts'/>
 ///<reference path='../typings/mongoose/mongoose.d.ts'/>
-///<reference path='../typings/express/express.d.ts'/>
 'use strict';
 
 import express = require('express');
-var app: express.Express = express();
+var app: Express = express();
 
 import config = require('config');
 import mongoose = require('mongoose');
@@ -20,10 +19,10 @@ app.set('port', process.env.PORT || config.development.port);
 
 // mongoDBサーバー接続
 mongoose.connect(process.env.MONGOHQ_URL || config.development.mongoURL);
-var db: mongoose.Connection = mongoose.connection;
+var db: Connection = mongoose.connection;
 
 // DojoListスキーマモデル生成
-var DojoLists: mongoose.Model = db.model('DojoLists', schema.DojoListSchema);
+var DojoLists: Model = db.model('DojoLists', schema.DojoListSchema);
 
 // CORS(Cross-Origin Resource Sharing)の設定
 app.all('*', function(req: any, res: any, next: Function): any {

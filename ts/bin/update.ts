@@ -1,16 +1,18 @@
 ///<reference path='../../../typings/node/node.d.ts'/>
 ///<reference path='../../../typings/mongoose/mongoose.d.ts'/>
-///<reference path='../../../typings/q/Q.d.ts'/>
 // ↑正しいパスは'../../typings/～'だけどなぜかコンパイルできないので。
 'use strict';
 
-import https = require('https');
-import config = require('config');
-import mongoose = require('mongoose');
-import schema = require('../schema');
-import csv = require('csv');
-import Q = require('q');
-import sendgrid = require('sendgrid');
+var https = require('https');
+var config = require('config');
+var mongoose = require('mongoose');
+var schema = require('../schema');
+var csv = require('csv');
+var Q = require('q');
+var sendgrid = require('sendgrid')(
+  process.env.SENDGRID_USERNAME || config.development.sendgrid.userName,
+  process.env.SENDGRID_PASSWORD || config.development.sendgrid.password
+);
 
 // CSVの列
 var COLUMNS = {
@@ -33,16 +35,16 @@ var COLUMNS = {
  * エラー処理
  * @param {type} err Errorオブジェクト
  */
-function onError(err: Error): void {
+function onError(err) {
   console.log(err.stack);
 
-  var mailAddress: string = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
+  var mailAddress = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
   sendgrid.send({
     to: mailAddress,
     from: mailAddress,
     subject: 'mobamas-dojo-serverエラー報告',
     text: err.stack
-  }, function(err: any/*, json*/): void {
+  }, function(err/*, json*/) {
     console.log(err.stack);
   });
 }
@@ -51,7 +53,7 @@ function onError(err: Error): void {
  * DBから切断する
  * @returns {Q.Promise} Q.Promise
  */
-function disconnectDB(): any {
+function disconnectDB() {
   console.log('disconnectDB');
   return Q.ninvoke(mongoose, 'disconnect');
 }
@@ -61,7 +63,7 @@ function disconnectDB(): any {
  * @param {object} dojoList 道場リストのオブジェクト
  * @returns {Q.Promise} Q.Promise
  */
-function saveDB(dojoList): any {
+function saveDB(dojoList) {
   console.log('saveDB');
   return Q.ninvoke(dojoList, 'save');
 }
@@ -72,7 +74,7 @@ function saveDB(dojoList): any {
  * @param {object} dojos 道場リストのオブジェクトがラッピングされた物
  * @returns {Q.Promise} Q.Promise
  */
-function removeDB(db, dojos): any {
+function removeDB(db, dojos) {
   console.log('removeDB');
   var deferred = Q.defer();
 
@@ -102,7 +104,7 @@ function removeDB(db, dojos): any {
 /**
  * DBへ接続する
  */
-function connectDB(): any {
+function connectDB() {
   console.log('connectDB');
   var deferred = Q.defer();
 
@@ -132,7 +134,7 @@ function connectDB(): any {
  * CSVファイルを加工する
  * @param {string} data CSVファイルの中身
  */
-function transformCSV(data): any {
+function transformCSV(data) {
   console.log('transformCSV');
   var deferred = Q.defer();
 
@@ -181,7 +183,7 @@ function transformCSV(data): any {
 /**
  * CSVファイルをダウンロードする
  */
-function downloadCSV(): any {
+function downloadCSV() {
   console.log('downloadCSV');
   var deferred = Q.defer();
 
@@ -222,7 +224,7 @@ function downloadCSV(): any {
 }
 
 downloadCSV()
-  .then(function(csv: stirng): any {
+  .then(function(csv) {
     return Q.allSettled([ connectDB(), transformCSV(csv) ]);
   })
   .spread(removeDB)
