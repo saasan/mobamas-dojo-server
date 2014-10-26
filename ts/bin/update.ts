@@ -1,6 +1,5 @@
-///<reference path='../../../typings/node/node.d.ts'/>
-///<reference path='../../../typings/mongoose/mongoose.d.ts'/>
-// ↑正しいパスは'../../typings/～'だけどなぜかコンパイルできないので。
+///<reference path='../../../typings/node.d.ts'/>
+// ↑正しいパスは'../../typings/node.d.ts'だけどなぜかコンパイルできないので。
 'use strict';
 
 var https = require('https');
