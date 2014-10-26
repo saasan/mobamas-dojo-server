@@ -8,10 +8,7 @@ var mongoose = require('mongoose');
 var schema = require('../schema');
 var csv = require('csv');
 var Q = require('q');
-var sendgrid = require('sendgrid')(
-  process.env.SENDGRID_USERNAME || config.development.sendgrid.userName,
-  process.env.SENDGRID_PASSWORD || config.development.sendgrid.password
-);
+var sendgrid = require('sendgrid');
 
 // CSVの列
 var COLUMNS = {
@@ -37,13 +34,19 @@ var COLUMNS = {
 function onError(err) {
   console.log(err.stack);
 
+  var userName = process.env.SENDGRID_USERNAME || config.development.sendgrid.userName;
+  var password = process.env.SENDGRID_PASSWORD || config.development.sendgrid.password;
   var mailAddress = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
-  sendgrid.send({
+  
+  var sender = new sendgrid.SendGrid(userName, password);
+  var mail = new sendgrid.Email({
     to: mailAddress,
     from: mailAddress,
     subject: 'mobamas-dojo-serverエラー報告',
     text: err.stack
-  }, function(err/*, json*/) {
+  });
+
+  sender.send(mail, function(err/*, json*/) {
     console.log(err.stack);
   });
 }
