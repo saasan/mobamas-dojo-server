@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var tsc = require('gulp-tsc');
 var rimraf = require('rimraf');
+var tslint = require('gulp-tslint');
 
 var paths = {
   files: ['.gitignore', 'package.json', 'Procfile', 'config/*', 'bin/*'],
@@ -16,6 +17,12 @@ gulp.task('clean', function() {
 gulp.task('copy', function() {
   gulp.src(paths.files, { base: './' })
     .pipe(gulp.dest(paths.out));
+});
+
+gulp.task('tslint', function() {
+  gulp.src(paths.ts)
+    .pipe(tslint())
+    .pipe(tslint.report('verbose'));
 });
 
 gulp.task('ts', function() {
