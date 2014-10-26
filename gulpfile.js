@@ -6,7 +6,7 @@ var tslint = require('gulp-tslint');
 
 var paths = {
   files: ['.gitignore', 'package.json', 'Procfile', 'config/*', 'bin/*'],
-  ts: 'ts/**/*.ts',
+  ts: ['ts/*.ts', 'ts/bin/*.ts'],
   out: '../mobamas-dojo-server-release/'
 };
 
@@ -26,11 +26,8 @@ gulp.task('tslint', function() {
 });
 
 gulp.task('ts', function() {
-  gulp.src(paths.ts, { base: 'ts/' })
-    .pipe(tsc({
-      keepTree: false, // デフォルトのkeepTree: trueだとなぜかコンパイルできないので。
-      removeComments: true
-    }))
+  gulp.src(paths.ts)
+    .pipe(tsc({ removeComments: true }))
     .pipe(gulp.dest(paths.out));
 });
 
