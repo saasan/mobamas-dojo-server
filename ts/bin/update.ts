@@ -11,20 +11,20 @@ var Q = require('q');
 var sendgrid = require('sendgrid');
 
 // CSVの列
-var COLUMNS = {
-  UNUSED: 0,
-  LV: 1,
-  RANK: 2,
-  ID: 3,
-  TYPE: 4,
-  LINK: 5,
-  CHEER: 6,
-  LEADER: 7,
-  DEFENSE: 8,
-  COMMENT: 9,
-  NO: 10,
-  LAST_UPDATE: 11,
-  REPEATED: 12
+enum COLUMN {
+  UNUSED,
+  LV,
+  RANK,
+  ID,
+  TYPE,
+  LINK,
+  CHEER,
+  LEADER,
+  DEFENSE,
+  COMMENT,
+  NO,
+  LAST_UPDATE,
+  REPEATED
 };
 
 /**
@@ -37,7 +37,7 @@ function onError(err) {
   var userName = process.env.SENDGRID_USERNAME || config.development.sendgrid.userName;
   var password = process.env.SENDGRID_PASSWORD || config.development.sendgrid.password;
   var mailAddress = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
-  
+
   var sender = new sendgrid.SendGrid(userName, password);
   var mail = new sendgrid.Email({
     to: mailAddress,
@@ -146,17 +146,17 @@ function transformCSV(data) {
   // 各行が読み込めるようになったらオブジェクト化して配列へ入れる
   parser.on('readable', function() {
     for (var record = parser.read(); record; record = parser.read()) {
-      if (record[COLUMNS.LV] === '' || record[COLUMNS.RANK] === '' ||
-          record[COLUMNS.ID] === '' || record[COLUMNS.REPEATED] === '重複') {
+      if (record[COLUMN.LV] === '' || record[COLUMN.RANK] === '' ||
+          record[COLUMN.ID] === '' || record[COLUMN.REPEATED] === '重複') {
         continue;
       }
 
       var dojo = {
-        lv : parseInt(record[COLUMNS.LV], 10),
-        rank : record[COLUMNS.RANK].replace(/\./g, ''),
-        id : parseInt(record[COLUMNS.ID], 10),
-        leader : record[COLUMNS.LEADER],
-        defense : record[COLUMNS.DEFENSE]
+        lv : parseInt(record[COLUMN.LV], 10),
+        rank : record[COLUMN.RANK].replace(/\./g, ''),
+        id : parseInt(record[COLUMN.ID], 10),
+        leader : record[COLUMN.LEADER],
+        defense : record[COLUMN.DEFENSE]
       };
       dojos.push(dojo);
     }
