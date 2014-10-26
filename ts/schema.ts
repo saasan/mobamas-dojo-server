@@ -2,8 +2,8 @@
 ///<reference path='../typings/mongoose/mongoose.d.ts'/>
 'use strict';
 
-import mongoose = require('mongoose');
-var Schema: Schema = mongoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 // DojoListスキーマ定義
 module.exports.DojoListSchema = new Schema({
