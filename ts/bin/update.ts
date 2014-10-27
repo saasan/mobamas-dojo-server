@@ -9,6 +9,7 @@ var schema = require('../schema');
 var csv = require('csv');
 var Q = require('q');
 var sendgrid = require('sendgrid');
+var dateFormat = require('dateformat');
 
 // CSVの列
 enum COLUMN {
@@ -93,7 +94,8 @@ function removeDB(db, dojos) {
 
       // 新しい道場リスト
       var dojoList = new DojoLists();
-      dojoList.json = JSON.stringify(dojos.value);
+      var lastUpdate = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+      dojoList.json = JSON.stringify({ lastUpdate: lastUpdate, dojos: dojos.value });
 
       // 次の処理へdojoListを渡す
       deferred.resolve(dojoList);
