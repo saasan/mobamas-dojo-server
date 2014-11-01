@@ -34,7 +34,7 @@ enum COLUMN {
  * @returns {string} 半角化した文字列
  */
 function fullToHalf(str: string): string {
-  var delta = "０".charCodeAt(0) - "0".charCodeAt(0);
+  var delta = '０'.charCodeAt(0) - '0'.charCodeAt(0);
   return str.replace(/[０-９ａ-ｚＡ-Ｚ]/g, function(c) {
     return String.fromCharCode(c.charCodeAt(0) - delta);
   });
