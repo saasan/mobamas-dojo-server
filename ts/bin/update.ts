@@ -29,8 +29,50 @@ enum COLUMN {
 };
 
 /**
+ * 全角を半角に変換
+ * @param {string} str 全角を含む文字列
+ * @returns {string} 半角化した文字列
+ */
+function fullToHalf(str: string): string {
+  var delta = "０".charCodeAt(0) - "0".charCodeAt(0);
+  return str.replace(/[０-９ａ-ｚＡ-Ｚ]/g, function(c) {
+    return String.fromCharCode(c.charCodeAt(0) - delta);
+  });
+}
+
+/**
+ * 守発揮値の文字列から、最低守発揮値を数値として取り出す
+ * @param {string} defence CSVから取り出した守発揮値の文字列
+ * @returns {number} 最低守発揮値。数字が無い場合は0を返す。
+ */
+function getMinDefence(defence: string): number {
+  // 一番左にある数値がおそらく最低守発揮値
+  var re = /^[^0-9０-９]*([0-9０-９.]+)/;
+
+  // 数字が無い場合は0を返す
+  if (!re.test(defence)) {
+    return 0;
+  }
+
+  // 数字部分を取り出して半角に変換する
+  var minDefenceString: string = defence.replace(re, '$1');
+  minDefenceString = fullToHalf(minDefenceString);
+
+  // 数値化
+  var minDefence: number = parseFloat(minDefenceString);
+
+  // 数が小さい場合は「5k」等の表記と思われるので1000倍する
+  if (minDefence < 100) {
+    minDefence *= 1000;
+  }
+
+  // 小数点以下を切り捨てて返す
+  return Math.floor(minDefence);
+}
+
+/**
  * エラー処理
- * @param {type} err Errorオブジェクト
+ * @param {Error} err Errorオブジェクト
  */
 function onError(err) {
   console.log(err.stack);
@@ -158,7 +200,8 @@ function transformCSV(data) {
         rank : record[COLUMN.RANK].replace(/\./g, ''),
         id : parseInt(record[COLUMN.ID], 10),
         leader : record[COLUMN.LEADER],
-        defense : record[COLUMN.DEFENSE]
+        defense : record[COLUMN.DEFENSE],
+        minDefense : getMinDefence(record[COLUMN.DEFENSE])
       };
       dojos.push(dojo);
     }
