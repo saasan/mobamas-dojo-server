@@ -12,3 +12,7 @@
 
 - heroku上なら `heroku config:set NODE_ENV=production`
 - ローカルなら config/local.json を読み込むので設定不要
+
+##JSONの更新日時を日本時間にする
+
+`heroku config:add TZ=Asia/Tokyo`
