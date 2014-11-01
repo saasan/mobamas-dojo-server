@@ -39,7 +39,7 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-app.get('/', function(req, res, next) {
+app.get('/dojos', function(req, res, next) {
   // 本番環境でX-Requested-Withヘッダが"XMLHttpRequest"でない場合
   if (production && !req.xhr) {
     // 403 Forbidden
