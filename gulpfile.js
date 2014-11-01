@@ -1,18 +1,30 @@
 'use strict';
 var gulp = require('gulp');
 var tsc = require('gulp-tsc');
-var rimraf = require('rimraf');
+var del = require('del');
 var tslint = require('gulp-tslint');
 
 var paths = {
-  files: ['.gitignore', 'package.json', 'Procfile', 'config/*', 'bin/*'],
+  files: [
+    'bin/*',
+    'config/*',
+    '.gitignore',
+    'package.json',
+    'Procfile'
+  ],
   ts: ['ts/*.ts', 'ts/bin/*.ts'],
-  out: '../mobamas-dojo-server-release/'
+  out: 'release/',
+  clean: [
+    'release/bin/*',
+    'release/config/*',
+    'release/.gitignore',
+    'release/package.json',
+    'release/Procfile',
+    'release/*.js'
+  ]
 };
 
-gulp.task('clean', function() {
-  rimraf.sync(paths.out);
-});
+gulp.task('clean', del.sync.bind(null, paths.clean, { dot: true }));
 
 gulp.task('copy', function() {
   gulp.src(paths.files, { base: './' })
