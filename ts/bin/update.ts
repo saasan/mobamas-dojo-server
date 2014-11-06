@@ -43,7 +43,7 @@ function fullToHalf(str: string): string {
 /**
  * 守発揮値の文字列から、最低守発揮値を数値として取り出す
  * @param {string} defence CSVから取り出した守発揮値の文字列
- * @returns {number} 最低守発揮値。数字が無い場合は0を返す。
+ * @returns {number} 最低守発揮値。数字が無い場合はnullを返す。
  */
 function getMinDefence(defence: string): number {
   // 一番左にある数値がおそらく最低守発揮値
@@ -51,7 +51,7 @@ function getMinDefence(defence: string): number {
 
   // 数字が無い場合は0を返す
   if (!re.test(defence)) {
-    return 0;
+    return null;
   }
 
   // 数字部分を取り出して半角に変換する
@@ -184,25 +184,33 @@ function transformCSV(data) {
   console.log('transformCSV');
   var deferred = Q.defer();
 
-  var dojos = [];
-  var parser = csv.parse();
+  var dojo, dojos = [];
+  var minDefense;
+  var record, parser = csv.parse();
 
   // 各行が読み込めるようになったらオブジェクト化して配列へ入れる
   parser.on('readable', function() {
-    for (var record = parser.read(); record; record = parser.read()) {
+    for (record = parser.read(); record; record = parser.read()) {
       if (record[COLUMN.LV] === '' || record[COLUMN.RANK] === '' ||
           record[COLUMN.ID] === '' || record[COLUMN.REPEATED] === '重複') {
         continue;
       }
 
-      var dojo = {
+      dojo = {
         lv : parseInt(record[COLUMN.LV], 10),
         rank : record[COLUMN.RANK].replace(/\./g, ''),
         id : parseInt(record[COLUMN.ID], 10),
         leader : record[COLUMN.LEADER],
-        defense : record[COLUMN.DEFENSE],
-        minDefense : getMinDefence(record[COLUMN.DEFENSE])
+        defense : record[COLUMN.DEFENSE]
       };
+
+      // 最低守発揮値を取得
+      minDefense = getMinDefence(record[COLUMN.DEFENSE]);
+      // 最低守発揮値があれば追加
+      if (minDefense != null) {
+        dojo.minDefense = minDefense;
+      }
+
       dojos.push(dojo);
     }
   });
