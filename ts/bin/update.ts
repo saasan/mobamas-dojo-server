@@ -179,6 +179,7 @@ function getMinDefence(defence: string): number {
 /**
  * recordから道場のデータを作成する
  * @param {any} record CSVファイルのrecord
+ * @returns {any} 道場のデータ
  */
 function createDojo(record) {
   var minDefense;
