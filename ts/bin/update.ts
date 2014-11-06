@@ -177,6 +177,41 @@ function connectDB() {
 }
 
 /**
+ * recordから道場のデータを作成する
+ * @param {any} record CSVファイルのrecord
+ */
+function createDojo(record) {
+  var minDefense;
+  // 文字列の長さが0以上なら追加する物
+  var checkLength = {
+    leader: COLUMN.LEADER,
+    defense: COLUMN.DEFENSE
+  };
+
+  var dojo: any = {
+    lv : parseInt(record[COLUMN.LV], 10),
+    rank : record[COLUMN.RANK].replace(/\./g, ''),
+    id : parseInt(record[COLUMN.ID], 10)
+  };
+
+  // 文字列の長さが0以上なら追加
+  Object.keys(checkLength).forEach(function(key) {
+    if (record[checkLength[key]].length > 0) {
+      dojo[key] = record[checkLength[key]];
+    }
+  });
+
+  // 最低守発揮値を取得
+  minDefense = getMinDefence(record[COLUMN.DEFENSE]);
+  // 最低守発揮値があれば追加
+  if (minDefense != null) {
+    dojo.minDefense = minDefense;
+  }
+
+  return dojo;
+}
+
+/**
  * CSVファイルを加工する
  * @param {string} data CSVファイルの中身
  */
@@ -185,14 +220,7 @@ function transformCSV(data) {
   var deferred = Q.defer();
 
   var dojo, dojos = [];
-  var minDefense;
   var record, parser = csv.parse();
-  // 文字列の長さが0以上なら追加する物
-  var checkLength = {
-    leader: COLUMN.LEADER,
-    defense: COLUMN.DEFENSE
-  };
-
   // 各行が読み込めるようになったらオブジェクト化して配列へ入れる
   parser.on('readable', function() {
     for (record = parser.read(); record; record = parser.read()) {
@@ -201,26 +229,7 @@ function transformCSV(data) {
         continue;
       }
 
-      dojo = {
-        lv : parseInt(record[COLUMN.LV], 10),
-        rank : record[COLUMN.RANK].replace(/\./g, ''),
-        id : parseInt(record[COLUMN.ID], 10)
-      };
-
-      // 文字列の長さが0以上なら追加
-      Object.keys(checkLength).forEach(function(key) {
-        if (record[checkLength[key]].length > 0) {
-          dojo[key] = record[checkLength[key]];
-        }
-      });
-
-      // 最低守発揮値を取得
-      minDefense = getMinDefence(record[COLUMN.DEFENSE]);
-      // 最低守発揮値があれば追加
-      if (minDefense != null) {
-        dojo.minDefense = minDefense;
-      }
-
+      dojo = createDojo(record);
       dojos.push(dojo);
     }
   });
