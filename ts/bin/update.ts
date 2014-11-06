@@ -28,6 +28,21 @@ enum COLUMN {
   REPEATED
 };
 
+// ランク
+enum RANK {
+  F,
+  E,
+  D,
+  C,
+  B,
+  A,
+  S,
+  S2,
+  S3,
+  S4,
+  S5
+};
+
 /**
  * エラー処理
  * @param {Error} err Errorオブジェクト
@@ -182,7 +197,7 @@ function getMinDefence(defence: string): number {
  * @returns {any} 道場のデータ
  */
 function createDojo(record) {
-  var minDefense;
+  var rank, minDefense;
   // 文字列の長さが0以上なら追加する物
   var checkLength = {
     leader: COLUMN.LEADER,
@@ -191,9 +206,14 @@ function createDojo(record) {
 
   var dojo: any = {
     lv : parseInt(record[COLUMN.LV], 10),
-    rank : record[COLUMN.RANK].replace(/\./g, ''),
     id : parseInt(record[COLUMN.ID], 10)
   };
+
+  // ランクを数値化して追加
+  rank = record[COLUMN.RANK].replace(/\./g, '');
+  if (RANK[rank]) {
+    dojo.rank = RANK[rank];
+  }
 
   // 文字列の長さが0以上なら追加
   Object.keys(checkLength).forEach(function(key) {
