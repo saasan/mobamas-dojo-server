@@ -37,7 +37,7 @@ enum RANK {
   B,
   A,
   S,
-  S2,
+  SS,
   S3,
   S4,
   S5
