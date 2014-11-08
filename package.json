@@ -6,6 +6,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "compression": "^1.2.0",
     "config": "^0.4.37",
     "csv": "^0.4.0",
     "dateformat": "^1.0.8",

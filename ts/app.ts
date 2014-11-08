@@ -4,6 +4,7 @@
 var express = require('express');
 var app = express();
 
+var compress = require('compression');
 var config = require('config');
 var mongoose = require('mongoose');
 var schema = require('./schema');
@@ -15,6 +16,9 @@ var production = (process.env.NODE_ENV === 'production');
 
 // ポートの設定
 app.set('port', process.env.PORT || config.development.port);
+
+// gzip圧縮を有効にする
+app.use(compress());
 
 // mongoDBサーバー接続
 mongoose.connect(process.env.MONGOHQ_URL || config.development.mongoURL);
