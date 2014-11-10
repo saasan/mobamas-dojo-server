@@ -1,7 +1,7 @@
 'use strict';
+var del = require('del');
 var gulp = require('gulp');
 var tsc = require('gulp-tsc');
-var del = require('del');
 var tslint = require('gulp-tslint');
 
 var paths = {
