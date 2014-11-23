@@ -264,6 +264,29 @@ function transformCSV(data) {
   parser.on('finish', function() {
     console.log('parse finish');
 
+    var i;
+
+    // ランク順の道場番号を振る
+    for (i = 0; i < dojos.length; i++) {
+      dojos[i].rankNo = i + 1;
+    }
+
+    // レベル降順(レベルが同じならランク順)でソート
+    dojos.sort(function(a, b) {
+      var result = b.lv - a.lv;
+
+      if (result === 0) {
+        result = a.rankNo - b.rankNo;
+      }
+
+      return result;
+    });
+
+    // レベル順の道場番号を振る
+    for (i = 0; i < dojos.length; i++) {
+      dojos[i].lvNo = i + 1;
+    }
+
     // 次の処理へdojosを渡す
     deferred.resolve(dojos);
   });
