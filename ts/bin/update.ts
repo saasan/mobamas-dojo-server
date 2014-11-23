@@ -266,12 +266,23 @@ function transformCSV(data) {
 
     var i;
 
+    // ランク降順(ランクが同じならレベル降順)でソート
+    dojos.sort(function(a, b) {
+      var result = b.rank - a.rank;
+
+      if (result === 0) {
+        result = b.lv - a.lv;
+      }
+
+      return result;
+    });
+
     // ランク順の道場番号を振る
     for (i = 0; i < dojos.length; i++) {
       dojos[i].rankNo = i + 1;
     }
 
-    // レベル降順(レベルが同じならランク順)でソート
+    // レベル降順(レベルが同じならランク降順)でソート
     dojos.sort(function(a, b) {
       var result = b.lv - a.lv;
 
