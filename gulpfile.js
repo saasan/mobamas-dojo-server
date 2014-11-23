@@ -47,6 +47,16 @@ gulp.task('watch', function() {
   gulp.watch(paths.ts.in, ['ts']);
 });
 
+gulp.task('help', function() {
+  var tasks = Object.keys(gulp.tasks).sort();
+
+  console.log('');
+  tasks.forEach(function(name) {
+    console.log('  ' + name);
+  });
+  console.log('');
+});
+
 gulp.task('compile', ['ts']);
 gulp.task('release', ['clean', 'ts', 'copy']);
 gulp.task('default', ['ts']);
