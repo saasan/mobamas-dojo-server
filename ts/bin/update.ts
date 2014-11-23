@@ -211,7 +211,7 @@ function createDojo(record) {
 
   // ランクを数値化して追加
   rank = record[COLUMN.RANK].replace(/\./g, '');
-  if (RANK[rank]) {
+  if (RANK[rank] != null) {
     dojo.rank = RANK[rank];
   }
 
