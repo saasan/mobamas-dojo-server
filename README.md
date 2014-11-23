@@ -10,7 +10,8 @@
 
 ##設定方法
 
-- heroku上なら `heroku config:set NODE_ENV=production`
+- heroku上なら `heroku config:set NODE_ENV=production`  
+  設定解除は `heroku config:unset NODE_ENV`
 - ローカルなら config/local.json を読み込むので設定不要
 
 ##JSONの更新日時を日本時間にする
