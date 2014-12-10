@@ -330,8 +330,15 @@ function downloadCSV() {
     // データ受信完了
     res.on('end', function() {
       console.log('downloadCSV end');
-      // 次の処理へdataを渡す
-      deferred.resolve(data);
+
+      // データの長さを確認
+      if (data.length > 0) {
+        // 次の処理へdataを渡す
+        deferred.resolve(data);
+      }
+      else {        
+        deferred.reject(new Error('no CSV data'));
+      }
     });
   });
 
