@@ -48,8 +48,10 @@ enum RANK {
  * @param {Error} err Errorオブジェクト
  */
 function onError(err) {
-  console.log(err.stack);
+  // コンソール出力
+  console.error(err.stack);
 
+  // メール送信
   var userName = process.env.SENDGRID_USERNAME || config.development.sendgrid.userName;
   var password = process.env.SENDGRID_PASSWORD || config.development.sendgrid.password;
   var mailAddress = process.env.ERROR_REPORT_MAIL_ADDRESS || config.errorReportMailAddress;
@@ -63,7 +65,7 @@ function onError(err) {
   });
 
   sender.send(mail, function(err/*, json*/) {
-    console.log(err.stack);
+    console.error(err.stack);
   });
 }
 
