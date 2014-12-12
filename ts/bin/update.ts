@@ -306,11 +306,16 @@ function transformCSV(data) {
   parser.on('finish', function() {
     console.log('parse finish');
 
-    // 道場に番号を振る
-    dojos = addDojoNumber(dojos);
+    if (dojos.length > 0) {
+      // 道場に番号を振る
+      dojos = addDojoNumber(dojos);
 
-    // 次の処理へdojosを渡す
-    deferred.resolve(dojos);
+      // 次の処理へdojosを渡す
+      deferred.resolve(dojos);
+    }
+    else {
+      deferred.reject(new Error('no dojo data'));
+    }
   });
 
   // パース開始
