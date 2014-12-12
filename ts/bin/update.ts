@@ -233,6 +233,48 @@ function createDojo(record) {
 }
 
 /**
+ * 道場に番号を振る
+ * @param {array} dojos 道場データの配列
+ */
+function addDojoNumber(dojos) {
+  var i;
+
+  // ランク降順(ランクが同じならレベル降順)でソート
+  dojos.sort(function(a, b) {
+    var result = b.rank - a.rank;
+
+    if (result === 0) {
+      result = b.lv - a.lv;
+    }
+
+    return result;
+  });
+
+  // ランク順の道場番号を振る
+  for (i = 0; i < dojos.length; i++) {
+    dojos[i].rankNo = i + 1;
+  }
+
+  // レベル降順(レベルが同じならランク降順)でソート
+  dojos.sort(function(a, b) {
+    var result = b.lv - a.lv;
+
+    if (result === 0) {
+      result = a.rankNo - b.rankNo;
+    }
+
+    return result;
+  });
+
+  // レベル順の道場番号を振る
+  for (i = 0; i < dojos.length; i++) {
+    dojos[i].lvNo = i + 1;
+  }
+
+  return dojos;
+}
+
+/**
  * CSVファイルを加工する
  * @param {string} data CSVファイルの中身
  */
@@ -264,39 +306,8 @@ function transformCSV(data) {
   parser.on('finish', function() {
     console.log('parse finish');
 
-    var i;
-
-    // ランク降順(ランクが同じならレベル降順)でソート
-    dojos.sort(function(a, b) {
-      var result = b.rank - a.rank;
-
-      if (result === 0) {
-        result = b.lv - a.lv;
-      }
-
-      return result;
-    });
-
-    // ランク順の道場番号を振る
-    for (i = 0; i < dojos.length; i++) {
-      dojos[i].rankNo = i + 1;
-    }
-
-    // レベル降順(レベルが同じならランク降順)でソート
-    dojos.sort(function(a, b) {
-      var result = b.lv - a.lv;
-
-      if (result === 0) {
-        result = a.rankNo - b.rankNo;
-      }
-
-      return result;
-    });
-
-    // レベル順の道場番号を振る
-    for (i = 0; i < dojos.length; i++) {
-      dojos[i].lvNo = i + 1;
-    }
+    // 道場に番号を振る
+    dojos = addDojoNumber(dojos);
 
     // 次の処理へdojosを渡す
     deferred.resolve(dojos);
@@ -336,7 +347,7 @@ function downloadCSV() {
         // 次の処理へdataを渡す
         deferred.resolve(data);
       }
-      else {        
+      else {
         deferred.reject(new Error('no CSV data'));
       }
     });
