@@ -6,5 +6,8 @@
     "port": 4000,
     "mongoURL": "mongodb://localhost/mobamas-dojo-server"
   },
-  "downloadTimeout": 60000  // ミリ秒
+  "downloadTimeout": 60000,  // ミリ秒
+  "blackList": [
+    106961639
+  ]
 }

@@ -283,13 +283,20 @@ function transformCSV(data) {
   console.log('transformCSV');
   var deferred = Q.defer();
 
+  // ブラックリストを確認しやすいようにオブジェクト化
+  var i, blackList = {};
+  for (i = 0; i < config.blackList.length; i++) {
+    blackList[config.blackList[i]] = true;
+  }
+
   var dojo, dojos = [];
   var record, parser = csv.parse();
   // 各行が読み込めるようになったらオブジェクト化して配列へ入れる
   parser.on('readable', function() {
     for (record = parser.read(); record; record = parser.read()) {
       if (record[COLUMN.LV] === '' || record[COLUMN.RANK] === '' ||
-          record[COLUMN.ID] === '' || record[COLUMN.REPEATED] === '重複') {
+          record[COLUMN.ID] === '' || record[COLUMN.REPEATED] === '重複' ||
+          record[COLUMN.ID] in blackList) {
         continue;
       }
 
