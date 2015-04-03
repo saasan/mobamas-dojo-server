@@ -17,3 +17,8 @@
 ##JSONの更新日時を日本時間にする
 
 `heroku config:add TZ=Asia/Tokyo`
+
+##必要な物
+
+- Node.js
+- MongoDB
