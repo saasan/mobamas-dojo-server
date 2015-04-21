@@ -8,7 +8,7 @@ var schema = require('../schema');
 var csv = require('csv');
 var Q = require('q');
 var sendgrid = require('sendgrid');
-var dateFormat = require('dateformat');
+var moment = require('moment');
 
 // CSVの列
 enum COLUMN {
@@ -110,7 +110,7 @@ function removeDB(db, dojos) {
 
       // 新しい道場リスト
       var dojoList = new DojoLists();
-      var lastUpdate = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+      var lastUpdate = moment().format('YYYY-MM-DD HH:mm:ss');
       dojoList.json = JSON.stringify({ lastUpdate: lastUpdate, dojos: dojos.value });
 
       // 次の処理へdojoListを渡す
@@ -163,6 +163,19 @@ function fullToHalf(str: string): string {
 }
 
 /**
+ * YYYY/MM/DD形式の日付文字列をUNIX時間(ミリ秒)へ変換する
+ * @param {string} dateString YYYY/MM/DD形式の日付文字列
+ */
+function dateStringToUnixTime(dateString: string): number {
+  if (dateString.length < 1 || !(/^\d{4}\/\d{2}\/\d{2}$/.test(dateString))) {
+    return null;
+  }
+
+  var m = moment(dateString, 'YYYY/MM/DD');
+  return m.valueOf(); // date.getTime()と同じ
+}
+
+/**
  * 守発揮値の文字列から、最低守発揮値を数値として取り出す
  * @param {string} defence CSVから取り出した守発揮値の文字列
  * @returns {number} 最低守発揮値。数字が無い場合はnullを返す。
@@ -198,11 +211,12 @@ function getMinDefence(defence: string): number {
  * @returns {any} 道場のデータ
  */
 function createDojo(record) {
-  var rank, minDefense;
+  var rank, minDefense, lastUpdate;
   // 文字列の長さが0以上なら追加する物
   var checkLength = {
     leader: COLUMN.LEADER,
-    defense: COLUMN.DEFENSE
+    defense: COLUMN.DEFENSE,
+    comment: COLUMN.COMMENT
   };
 
   var dojo: any = {
@@ -228,6 +242,12 @@ function createDojo(record) {
   // 最低守発揮値があれば追加
   if (minDefense != null) {
     dojo.minDefense = minDefense;
+  }
+
+  // 最終更新日
+  lastUpdate = dateStringToUnixTime(record[COLUMN.LAST_UPDATE]);
+  if (lastUpdate != null) {
+    dojo.lastUpdate = lastUpdate;
   }
 
   return dojo;

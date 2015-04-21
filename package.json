@@ -8,8 +8,8 @@
     "compression": "^1.2.0",
     "config": "^0.4.37",
     "csv": "^0.4.0",
-    "dateformat": "^1.0.8",
     "express": "^4.9.7",
+    "moment": "^2.10.2",
     "mongoose": "^4.0.1",
     "q": "^1.0.1",
     "sendgrid": "^1.2.1"
